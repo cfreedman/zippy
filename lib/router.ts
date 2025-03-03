@@ -1,6 +1,7 @@
 import { IncomingMessage, ServerResponse } from "http";
+import { URL, URLSearchParams } from "url";
 
-import { HTTPMethod } from "./constants.ts";
+import { baseUrl, HTTPMethod } from "./constants.ts";
 
 interface DynamicParams {
   [key: string]: string;
@@ -8,6 +9,7 @@ interface DynamicParams {
 
 export interface IncomingRequest extends IncomingMessage {
   params?: DynamicParams;
+  queryParams?: URLSearchParams;
 }
 
 type RouteHandler = (req: IncomingRequest, res: ServerResponse<IncomingMessage>) => void;
@@ -33,12 +35,10 @@ export class Router {
 
   private addRoute(path: string, method: HTTPMethod, handler: RouteHandler) {
 
-    const segments = path.replace(/^\/+\/+$/,"").split("/");
-    const dynamicParams: string[] = [];
+    const url = new URL(path, baseUrl);
 
-    if (segments.some((segment) => segment.includes(" "))) {
-      throw new Error(`Incorrectly specified path ${path} - path should contain no whitespace`)
-    }
+    const segments = url.pathname.split("/").filter((value) => !(value.length == 0));
+    const dynamicParams: string[] = [];
 
     let currentNode = this.root;
     for (const segment of segments) {
@@ -61,9 +61,11 @@ export class Router {
     currentNode.params = dynamicParams;
   }
 
-  public findRoute(path: string, method: HTTPMethod): { params: DynamicParams, handler: RouteHandler } | null {
+  public findRoute(path: string, method: HTTPMethod): { handler: RouteHandler, params: DynamicParams, queryParams: URLSearchParams } | null {
 
-    const segments = path.replace(/^\/+\/+$/,"").split("/");
+    const url = new URL(path, "https://base.com/");
+    const segments = url.pathname.split("/").filter((value) => !(value.length == 0));
+    const queryParams = url.searchParams;
 
     let currentNode = this.root;
     const extractedParams: string[] = [];
@@ -88,8 +90,9 @@ export class Router {
     }
 
     return {
+      handler: currentNode.handler.get(method),
       params,
-      handler: currentNode.handler.get(method)
+      queryParams
     }
   }
 

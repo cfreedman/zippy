@@ -19,6 +19,7 @@ export const run = (router: Router, port: number) => {
     if (route?.handler) {
       const reqWithParams: IncomingRequest = req;
       reqWithParams.params = route.params
+      reqWithParams.queryParams = route.queryParams;
       route.handler(reqWithParams, res);
     } else {
       res.writeHead(404, null, { "Content-Length": 9 });
