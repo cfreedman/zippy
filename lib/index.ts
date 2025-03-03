@@ -1,17 +1,25 @@
 import { createServer } from "node:http";
 
-import { Router } from "./router.ts";
+import { IncomingRequest, Router } from "./router.js";
+import { HTTPMethod } from "./constants.js";
 
 const PORT = 5255;
 
 export const run = (router: Router, port: number) => {
 
   createServer((req, res) => {
-    const route = router.findRoute(req.url, req.method?);
+    if (!req.method) {
+      res.writeHead(404, null, { "Content-Length": 9 });
+      res.end("Not Found");
+      return
+    }
+
+    const route = router.findRoute(req.url, req.method as HTTPMethod);
 
     if (route?.handler) {
-      req.params = route.params;
-      route.handler(req, res);
+      const reqWithParams: IncomingRequest = req;
+      reqWithParams.params = route.params
+      route.handler(reqWithParams, res);
     } else {
       res.writeHead(404, null, { "Content-Length": 9 });
       res.end("Not Found");
@@ -19,16 +27,19 @@ export const run = (router: Router, port: number) => {
   }).listen(port);  
 }
 
-const router = new Router();
-router.get("/", function handleGetBasePath(req, res) { 
-  console.log("Hello from GET /"); 
-  res.end();
-});
-router.post("/", function handlePostBasePath(req, res) { 
-  console.log("Hello from POST /");
-  res.end();
-});
+// const router = new Router();
+// router.get("/", function handleGetBasePath(req, res) { 
+//   console.log("Hello from GET /"); 
+//   res.end();
+// });
+// router.post("/", function handlePostBasePath(req, res) { 
+//   console.log("Hello from POST /");
+//   res.end();
+// });
 
-const handleRequest = (req, res) => router.handleRequest(req, res);
-const server = http.createServer(handleRequest);
-server.listen(PORT);
+
+// const server = http.createServer(handleRequest);
+// server.listen(PORT);
+
+const router = new Router();
+run(router, PORT);

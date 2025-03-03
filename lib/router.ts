@@ -2,7 +2,15 @@ import { IncomingMessage, ServerResponse } from "http";
 
 import { HTTPMethod } from "./constants.ts";
 
-type RouteHandler = (req: IncomingMessage, res: ServerResponse<IncomingMessage>) => void;
+interface DynamicParams {
+  [key: string]: string;
+}
+
+export interface IncomingRequest extends IncomingMessage {
+  params?: DynamicParams;
+}
+
+type RouteHandler = (req: IncomingRequest, res: ServerResponse<IncomingMessage>) => void;
 
 class RouteNode {
   children: Map<string, RouteNode>;
@@ -46,14 +54,14 @@ export class Router {
         currentNode.children.set(key, newNode);
       }
 
-      currentNode = currentNode.children.get(segment);
+      currentNode = currentNode.children.get(key);
     }
 
     currentNode.handler.set(method, handler);
     currentNode.params = dynamicParams;
   }
 
-  public findRoute(path: string, method: HTTPMethod) {
+  public findRoute(path: string, method: HTTPMethod): { params: DynamicParams, handler: RouteHandler } | null {
 
     const segments = path.replace(/^\/+\/+$/,"").split("/");
 
@@ -73,7 +81,7 @@ export class Router {
       }
     }
 
-    const params = new Object();
+    const params: DynamicParams = {};
 
     for (const [param, value] of currentNode.params.map((param, index) => [param, extractedParams[index]])) {
       params[param] = value;
