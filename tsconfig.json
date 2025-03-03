@@ -1,12 +1,13 @@
 {
     "include": ["lib/**/*"],
     "compilerOptions": {
-        "module": "commonjs",
+        "module": "NodeNext",
         "esModuleInterop": true,
-        "target": "es6",
-        "moduleResolution": "node",
+        "target": "ESNext",
+        "moduleResolution": "NodeNext",
         "sourceMap": true,
-        "outDir": "dist"
+        "outDir": "dist",
+        "rewriteRelativeImportExtensions": true,
     },
     "lib": ["es2015"]
 }
