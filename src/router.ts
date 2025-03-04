@@ -1,7 +1,7 @@
 import { IncomingMessage, ServerResponse } from "http";
 import { URL, URLSearchParams } from "url";
 
-import { baseUrl, HTTPMethod } from "./constants.ts";
+import { baseUrl, HTTPMethod } from "./constants.js";
 
 interface DynamicParams {
   [key: string]: string;
@@ -54,7 +54,7 @@ export class Router {
         currentNode.children.set(key, newNode);
       }
 
-      currentNode = currentNode.children.get(key);
+      currentNode = currentNode.children.get(key) as RouteNode;
     }
 
     currentNode.handler.set(method, handler);
@@ -77,7 +77,7 @@ export class Router {
         currentNode = childNode;
       } else if (currentNode.children.has(":")) {
         extractedParams.push(segment);
-        currentNode = currentNode.children.get(":");
+        currentNode = currentNode.children.get(":") as RouteNode;
       } else {
         return null;
       }
@@ -90,7 +90,7 @@ export class Router {
     }
 
     return {
-      handler: currentNode.handler.get(method),
+      handler: currentNode.handler.get(method) as RouteHandler,
       params,
       queryParams
     }

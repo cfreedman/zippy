@@ -9,12 +9,12 @@ export const run = (router: Router, port: number) => {
 
   createServer((req, res) => {
     if (!req.method) {
-      res.writeHead(404, null, { "Content-Length": 9 });
+      res.writeHead(404, { "Content-Length": 9 });
       res.end("Not Found");
       return
     }
 
-    const route = router.findRoute(req.url, req.method as HTTPMethod);
+    const route = router.findRoute(req.url ?? "/", req.method as HTTPMethod);
 
     if (route?.handler) {
       const reqWithParams: IncomingRequest = req;
@@ -22,7 +22,7 @@ export const run = (router: Router, port: number) => {
       reqWithParams.queryParams = route.queryParams;
       route.handler(reqWithParams, res);
     } else {
-      res.writeHead(404, null, { "Content-Length": 9 });
+      res.writeHead(404, { "Content-Length": 9 });
       res.end("Not Found");
     }
   }).listen(port);  

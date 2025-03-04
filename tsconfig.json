@@ -1,13 +1,10 @@
 {
-    "include": ["lib/**/*"],
+    "extends": "@tsconfig/node20/tsconfig.json",
+    "include": ["src/**/*"],
+    "exclude": ["node_modules"],
     "compilerOptions": {
-        "module": "NodeNext",
-        "esModuleInterop": true,
-        "target": "ESNext",
-        "moduleResolution": "NodeNext",
         "sourceMap": true,
+        "rootDir": "src",
         "outDir": "dist",
-        "rewriteRelativeImportExtensions": true,
-    },
-    "lib": ["es2015"]
+    }
 }
