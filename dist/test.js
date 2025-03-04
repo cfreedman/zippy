@@ -1,6 +1,8 @@
-import { Router } from "./router.js";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const router_js_1 = require("./router.js");
 // import { run } from "./index";
-const router = new Router();
+const router = new router_js_1.Router();
 // Define the routes
 router.get("/", (req, res) => {
     res.end("Hello from the root endpoint");

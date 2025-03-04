@@ -1,5 +1,8 @@
-import { URL } from "url";
-import { baseUrl } from "./constants.js";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Router = void 0;
+const url_1 = require("url");
+const constants_js_1 = require("./constants.js");
 class RouteNode {
     children;
     handler;
@@ -10,14 +13,16 @@ class RouteNode {
         this.params = [];
     }
 }
-export class Router {
+class Router {
     root;
     constructor() {
         this.root = new RouteNode();
     }
     addRoute(path, method, handler) {
-        const url = new URL(path, baseUrl);
-        const segments = url.pathname.split("/").filter((value) => !(value.length == 0));
+        const url = new url_1.URL(path, constants_js_1.baseUrl);
+        const segments = url.pathname
+            .split("/")
+            .filter((value) => !(value.length == 0));
         const dynamicParams = [];
         let currentNode = this.root;
         for (const segment of segments) {
@@ -36,8 +41,10 @@ export class Router {
         currentNode.params = dynamicParams;
     }
     findRoute(path, method) {
-        const url = new URL(path, "https://base.com/");
-        const segments = url.pathname.split("/").filter((value) => !(value.length == 0));
+        const url = new url_1.URL(path, "https://base.com/");
+        const segments = url.pathname
+            .split("/")
+            .filter((value) => !(value.length == 0));
         const queryParams = url.searchParams;
         let currentNode = this.root;
         const extractedParams = [];
@@ -55,13 +62,16 @@ export class Router {
             }
         }
         const params = {};
-        for (const [param, value] of currentNode.params.map((param, index) => [param, extractedParams[index]])) {
+        for (const [param, value] of currentNode.params.map((param, index) => [
+            param,
+            extractedParams[index],
+        ])) {
             params[param] = value;
         }
         return {
             handler: currentNode.handler.get(method),
             params,
-            queryParams
+            queryParams,
         };
     }
     printTree(node = this.root, indentation = 0) {
@@ -99,4 +109,5 @@ export class Router {
         this.addRoute(path, "CONNECT", handler);
     }
 }
+exports.Router = Router;
 //# sourceMappingURL=router.js.map

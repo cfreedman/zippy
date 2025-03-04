@@ -1,8 +1,11 @@
-import { createServer } from "node:http";
-import { Router } from "./router.js";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.run = void 0;
+const node_http_1 = require("node:http");
+const router_js_1 = require("./router.js");
 const PORT = 5255;
-export const run = (router, port) => {
-    createServer((req, res) => {
+const run = (router, port) => {
+    (0, node_http_1.createServer)((req, res) => {
         if (!req.method) {
             res.writeHead(404, { "Content-Length": 9 });
             res.end("Not Found");
@@ -21,17 +24,18 @@ export const run = (router, port) => {
         }
     }).listen(port);
 };
+exports.run = run;
 // const router = new Router();
-// router.get("/", function handleGetBasePath(req, res) { 
-//   console.log("Hello from GET /"); 
+// router.get("/", function handleGetBasePath(req, res) {
+//   console.log("Hello from GET /");
 //   res.end();
 // });
-// router.post("/", function handlePostBasePath(req, res) { 
+// router.post("/", function handlePostBasePath(req, res) {
 //   console.log("Hello from POST /");
 //   res.end();
 // });
 // const server = http.createServer(handleRequest);
 // server.listen(PORT);
-const router = new Router();
-run(router, PORT);
+const router = new router_js_1.Router();
+(0, exports.run)(router, PORT);
 //# sourceMappingURL=index.js.map
