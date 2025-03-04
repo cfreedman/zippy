@@ -12,7 +12,10 @@ export interface IncomingRequest extends IncomingMessage {
   queryParams?: URLSearchParams;
 }
 
-type RouteHandler = (req: IncomingRequest, res: ServerResponse<IncomingMessage>) => void;
+type RouteHandler = (
+  req: IncomingRequest,
+  res: ServerResponse<IncomingMessage>,
+) => void;
 
 class RouteNode {
   children: Map<string, RouteNode>;
@@ -34,16 +37,17 @@ export class Router {
   }
 
   private addRoute(path: string, method: HTTPMethod, handler: RouteHandler) {
-
     const url = new URL(path, baseUrl);
 
-    const segments = url.pathname.split("/").filter((value) => !(value.length == 0));
+    const segments = url.pathname
+      .split("/")
+      .filter((value) => !(value.length == 0));
     const dynamicParams: string[] = [];
 
     let currentNode = this.root;
     for (const segment of segments) {
       const isDynamic = segment[0] === ":";
-      const key = isDynamic ? ":": segment;
+      const key = isDynamic ? ":" : segment;
 
       if (isDynamic) {
         dynamicParams.push(segment.slice(1));
@@ -61,10 +65,18 @@ export class Router {
     currentNode.params = dynamicParams;
   }
 
-  public findRoute(path: string, method: HTTPMethod): { handler: RouteHandler, params: DynamicParams, queryParams: URLSearchParams } | null {
-
+  public findRoute(
+    path: string,
+    method: HTTPMethod,
+  ): {
+    handler: RouteHandler;
+    params: DynamicParams;
+    queryParams: URLSearchParams;
+  } | null {
     const url = new URL(path, "https://base.com/");
-    const segments = url.pathname.split("/").filter((value) => !(value.length == 0));
+    const segments = url.pathname
+      .split("/")
+      .filter((value) => !(value.length == 0));
     const queryParams = url.searchParams;
 
     let currentNode = this.root;
@@ -85,15 +97,18 @@ export class Router {
 
     const params: DynamicParams = {};
 
-    for (const [param, value] of currentNode.params.map((param, index) => [param, extractedParams[index]])) {
+    for (const [param, value] of currentNode.params.map((param, index) => [
+      param,
+      extractedParams[index],
+    ])) {
       params[param] = value;
     }
 
     return {
       handler: currentNode.handler.get(method) as RouteHandler,
       params,
-      queryParams
-    }
+      queryParams,
+    };
   }
 
   public printTree(node = this.root, indentation = 0) {
