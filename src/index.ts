@@ -1,7 +1,7 @@
 import { createServer } from "node:http";
 
-import { IncomingRequest, Router } from "./router.js";
-import { HTTPMethod } from "./constants.js";
+import { IncomingRequest, Router } from "./router";
+import { HTTPMethod } from "./constants";
 
 const PORT = 5255;
 

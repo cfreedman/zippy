@@ -1,7 +1,7 @@
 import { IncomingMessage, ServerResponse } from "http";
 import { URL, URLSearchParams } from "url";
 
-import { baseUrl, HTTPMethod } from "./constants.js";
+import { baseUrl, HTTPMethod } from "./constants";
 
 interface DynamicParams {
   [key: string]: string;
@@ -14,7 +14,7 @@ export interface IncomingRequest extends IncomingMessage {
 
 type RouteHandler = (
   req: IncomingRequest,
-  res: ServerResponse<IncomingMessage>,
+  res: ServerResponse<IncomingMessage>
 ) => void;
 
 class RouteNode {
@@ -67,13 +67,13 @@ export class Router {
 
   public findRoute(
     path: string,
-    method: HTTPMethod,
+    method: HTTPMethod
   ): {
     handler: RouteHandler;
     params: DynamicParams;
     queryParams: URLSearchParams;
   } | null {
-    const url = new URL(path, "https://base.com/");
+    const url = new URL(path, baseUrl);
     const segments = url.pathname
       .split("/")
       .filter((value) => !(value.length == 0));
