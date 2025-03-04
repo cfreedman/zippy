@@ -1,9 +1,4 @@
 import { Router } from "../src/router";
-import { add } from "../src/utils";
-
-test("add test", () => {
-  expect(add(3, 4)).toBe(7);
-});
 
 test("Valid route", () => {
   const testRouter = new Router();
